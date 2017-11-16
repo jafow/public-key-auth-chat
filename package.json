@@ -1,0 +1,14 @@
+{
+  "name": "jshp-crypto",
+  "version": "1.0.0",
+  "description": "talk about crypto and JS",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jared Fowler <jared.a.fowler@gmail.com> (@jafow)",
+  "license": "ISC",
+  "dependencies": {
+    "sodium-native": "^2.0.0"
+  }
+}
