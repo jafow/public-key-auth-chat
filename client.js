@@ -1,30 +1,40 @@
 const sodium = require('sodium-native')
 const http = require('http')
+const PORT = 3888
+const HOST = 'localhost'
 
 // create a 32 byte length _nearly_ empty buffer that sodium will make into a Public Key
 var publicKey = Buffer.allocUnsafe(sodium.crypto_box_PUBLICKEYBYTES)
 
 // create a 32 byte length _nearly_ empty buffer that sodium will make into a Secret Key
 var secretKey = Buffer.allocUnsafe(sodium.crypto_box_SECRETKEYBYTES)
-var message = 'doing the crypto is fun and cool'
+var message = 'shhh secretz'
 var mLen = message.length
 var cipher = Buffer.allocUnsafe(sodium.crypto_box_SEALBYTES + mLen)
 
 // make the keys
 sodium.crypto_box_keypair(publicKey, secretKey)
 
+var requestKeyOptions = {hostname: HOST, port: PORT, method: 'GET', path: '/pk'}
+var sendMessageOptions = {hostname: HOST, port: PORT, method: 'POST', path: '/msg'}
+
 // get the recipients PK:
-var opts = {hostname: HOST, port: PORT, method: 'GET', path: '/pk'}
-var req = http.request(opts, (res) => {
+var req = http.request(requestKeyOptions, (res) => {
   res.on('data', (d) => {
-    let rk = d
+    var haxor = Buffer.alloc(32)
+    sodium.randombytes_buf(haxor)
+    let rk = haxor // d
     // encrypt the ciphertext with recipient's pk that we got from their server
     sodium.crypto_box_seal(cipher, Buffer.from(message, 'utf8'), rk)
 
-    // post the message back to them
-    var req1 = http.request({hostname: HOST, port: PORT, method: 'POST', path: '/msg'}, (_res) => {
-      _res.on('end', () => { console.log('ended') })
-      _res.on('data', (data) => { console.log('got data: ', data.toString()) })
+    // post the message (encrypted with their public key!) back to them
+    var req1 = http.request(sendMessageOptions, (_res) => {
+      _res.on('end', () => {
+        console.log('ended')
+      })
+      _res.on('data', (data) => {
+        console.log('got data from: ', data.toString())
+      })
     })
     req1.write(cipher)
     req1.end()
