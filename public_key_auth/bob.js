@@ -1,5 +1,5 @@
 const sodium = require('sodium-native')
-const decrypt = require('./lib/decrypt.js')
+const decrypt = require('./../lib/decrypt.js')
 const net = require('net')
 const PORT = 3888
 
