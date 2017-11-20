@@ -8,7 +8,7 @@ var publicKey = Buffer.allocUnsafe(sodium.crypto_box_PUBLICKEYBYTES)
 
 // create a 32 byte length _nearly_ empty buffer that sodium will make into a Secret Key
 var secretKey = Buffer.allocUnsafe(sodium.crypto_box_SECRETKEYBYTES)
-var message = 'shhh secretz'
+var message = process.argv.slice(2).join(' ')
 var mLen = message.length
 var cipher = Buffer.allocUnsafe(sodium.crypto_box_SEALBYTES + mLen)
 
@@ -21,9 +21,12 @@ var sendMessageOptions = {hostname: HOST, port: PORT, method: 'POST', path: '/ms
 // get the recipients PK:
 var req = http.request(requestKeyOptions, (res) => {
   res.on('data', (d) => {
-    var haxor = Buffer.alloc(32)
-    sodium.randombytes_buf(haxor)
-    let rk = haxor // d
+    /** uncomment the 3 lines below to trigger error for invalid key
+    * var haxor = Buffer.alloc(32)
+    * sodium.randombytes_buf(haxor)
+    * let rk = haxor
+    */
+    let rk = d
     // encrypt the ciphertext with recipient's pk that we got from their server
     sodium.crypto_box_seal(cipher, Buffer.from(message, 'utf8'), rk)
 
@@ -33,7 +36,7 @@ var req = http.request(requestKeyOptions, (res) => {
         console.log('ended')
       })
       _res.on('data', (data) => {
-        console.log('got data from: ', data.toString())
+        console.log('message received status: ', data.toString())
       })
     })
     req1.write(cipher)

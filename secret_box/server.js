@@ -28,7 +28,6 @@ const server = http.createServer(function (req, res) {
       )
 
       if (isVerified !== false) {
-        console.log('is valid: ', isVerified)
         let dec = decryptedMsgBytes.toString()
         console.log(`decrypted: ${dec}`)
         res.end('ok\n')
