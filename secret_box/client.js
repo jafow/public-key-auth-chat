@@ -1,16 +1,17 @@
 const sodium = require('sodium-native')
 const http = require('http')
+const alloc = require('buffer-alloc')
 const PORT = 3888
 const HOST = 'localhost'
 
 // create a 32 byte length _nearly_ empty buffer that sodium will make into a Public Key
-var publicKey = Buffer.allocUnsafe(sodium.crypto_box_PUBLICKEYBYTES)
+var publicKey = alloc(sodium.crypto_box_PUBLICKEYBYTES)
 
 // create a 32 byte length _nearly_ empty buffer that sodium will make into a Secret Key
-var secretKey = Buffer.allocUnsafe(sodium.crypto_box_SECRETKEYBYTES)
-var message = process.argv.slice(2).join(' ')
+var secretKey = alloc(sodium.crypto_box_SECRETKEYBYTES)
+var message = process.argv.slice(2).join(' ') || 'Hello WORLD'
 var mLen = message.length
-var cipher = Buffer.allocUnsafe(sodium.crypto_box_SEALBYTES + mLen)
+var cipher = alloc(sodium.crypto_box_SEALBYTES + mLen)
 
 // make the keys
 sodium.crypto_box_keypair(publicKey, secretKey)
@@ -22,8 +23,8 @@ var sendMessageOptions = {hostname: HOST, port: PORT, method: 'POST', path: '/ms
 var req = http.request(requestKeyOptions, (res) => {
   res.on('data', (d) => {
     /** uncomment the 3 lines below to trigger error for invalid key
-    * var haxor = Buffer.alloc(32)
-    * sodium.randombytes_buf(haxor)
+     * var haxor = Buffer.alloc(32)
+     * sodium.randombytes_buf(haxor)
     * let rk = haxor
     */
     let rk = d

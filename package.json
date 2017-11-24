@@ -9,6 +9,7 @@
   "author": "Jared Fowler <jared.a.fowler@gmail.com> (@jafow)",
   "license": "ISC",
   "dependencies": {
+    "buffer-alloc": "^1.1.0",
     "sodium-native": "^2.0.0"
   },
   "devDependencies": {

@@ -1,13 +1,14 @@
 const sodium = require('sodium-native')
 const decrypt = require('./../lib/decrypt.js')
 const net = require('net')
+const alloc = require('buffer-alloc')
 const PORT = 3888
 const HOST = 'localhost'
 
 // create a 32 byte length _nearly_ empty buffer that sodium will make into a Public Key
-var myPublicKey = Buffer.allocUnsafe(sodium.crypto_box_PUBLICKEYBYTES)
+var myPublicKey = alloc(sodium.crypto_box_PUBLICKEYBYTES)
 // create a 32 byte length _nearly_ empty buffer that sodium will make into a Secret Key
-var mySecretKey = Buffer.allocUnsafe(sodium.crypto_box_SECRETKEYBYTES)
+var mySecretKey = alloc(sodium.crypto_box_SECRETKEYBYTES)
 // make my keys
 sodium.crypto_box_keypair(myPublicKey, mySecretKey)
 
@@ -42,8 +43,8 @@ req.on('connect', (c) => {
 
 function writeEncryptedMessage (msg) {
   var message = Buffer.from(msg)
-  var cipher = Buffer.alloc(message.length + sodium.crypto_box_MACBYTES)
-  var nonce = Buffer.allocUnsafe(sodium.crypto_secretbox_NONCEBYTES)
+  var cipher = alloc(message.length + sodium.crypto_box_MACBYTES)
+  var nonce = alloc(sodium.crypto_secretbox_NONCEBYTES)
   sodium.randombytes_buf(nonce) // insert random data into nonce
 
   // encrypt the message and write it

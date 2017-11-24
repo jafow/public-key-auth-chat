@@ -1,12 +1,13 @@
 const sodium = require('sodium-native')
 const http = require('http')
+const alloc = require('buffer-alloc')
 const PORT = 3888
 
 // create a 32 byte length _nearly_ empty buffer that sodium will make into a Public Key
-var publicKey = Buffer.allocUnsafe(sodium.crypto_box_PUBLICKEYBYTES)
+var publicKey = alloc(sodium.crypto_box_PUBLICKEYBYTES)
 
 // create a 32 byte length _nearly_ empty buffer that sodium will make into a Secret Key
-var secretKey = Buffer.allocUnsafe(sodium.crypto_box_SECRETKEYBYTES)
+var secretKey = alloc(sodium.crypto_box_SECRETKEYBYTES)
 sodium.crypto_box_keypair(publicKey, secretKey)
 
 const server = http.createServer(function (req, res) {
