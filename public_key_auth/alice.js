@@ -50,5 +50,5 @@ function writeEncryptedMessage (msg) {
   // encrypt the message and write it
   sodium.crypto_box_easy(cipher, message, nonce, theirPublicKey, mySecretKey)
 
-  req.write(Buffer.from(Buffer.concat([nonce, cipher])))
+  req.write(Buffer.from(Buffer.concat([myPublicKey, nonce, cipher])))
 }
