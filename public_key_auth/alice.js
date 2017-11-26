@@ -25,9 +25,6 @@ var req = net.createConnection({port: PORT, host: HOST}, () => {
       var {decrypted, plainText} = decrypt(msg, theirPublicKey, mySecretKey)
       if (decrypted) {
         console.log('>> ', plainText)
-      } else {
-        console.error('Invalid message: ', plainText)
-        req.destroy()
       }
     }
   })
@@ -39,6 +36,10 @@ req.on('connect', (c) => {
   console.log(`connected to ${HOST}:${PORT}`)
   console.log('---------')
   req.write(myPublicKey)
+})
+
+req.on('end', () => {
+  console.log('Goodbye')
 })
 
 function writeEncryptedMessage (msg) {
