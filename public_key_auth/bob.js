@@ -38,11 +38,12 @@ const server = net.createServer((sock) => {
 
   // write messages to them
   process.stdin.on('data', function (msg) {
-    // we should already have their public key
+    var respondersPublicKey = getByKey(sliceShortName(msg), store)
     var nonce = alloc(sodium.crypto_box_NONCEBYTES)
     sodium.randombytes_buf(nonce)
+
     var cipher = alloc(msg.byteLength + sodium.crypto_box_MACBYTES)
-    sodium.crypto_box_easy(cipher, msg, nonce, theirPublicKey, mySecretKey)
+    sodium.crypto_box_easy(cipher, msg, nonce, respondersPublicKey, mySecretKey)
 
     sock.write(Buffer.from(Buffer.concat([nonce, cipher])))
   })
